@@ -1,0 +1,14 @@
+namespace Grupo_G_API.Models
+{
+    public class Cancion
+    {
+        public int Id { get; set; }
+        public string Nombre { get; set; } = string.Empty;
+        public int IdAlbum { get; set; }
+        public int IdArtista { get; set; }
+        public int DuracionSegundos { get; set; }
+        public int NumeroPista { get; set; } = 1;
+        public string RutaArchivo { get; set; } = string.Empty;
+        public DateTime FechaCreacion { get; set; }
+    }
+}
