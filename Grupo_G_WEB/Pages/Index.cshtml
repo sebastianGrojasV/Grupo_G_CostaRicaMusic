@@ -1,14 +1,11 @@
 @page
 @model IndexModel
 @{
-    ViewData["Title"] = "Costa Rica Music";
+    ViewData["Title"] = "Inicio";
 }
 
-<section class="spotify-shell">
-    <aside class="sidebar">
-        <h1>Costa Rica Music</h1>
-        <p class="subtitle">Primer MVP tipo Spotify</p>
-
+<section class="home-grid">
+    <div class="library-card">
         <h2>Playlist de ejemplo</h2>
         <ul>
             @foreach (var cancion in Model.Canciones)
@@ -34,7 +31,7 @@
             <p id="nowPlayingArtist">—</p>
             <p class="small-note">Usá la barra inferior para controlar la reproducción.</p>
         </div>
-    </main>
+    </div>
 </section>
 
 <footer class="global-player" aria-label="Reproductor global">
