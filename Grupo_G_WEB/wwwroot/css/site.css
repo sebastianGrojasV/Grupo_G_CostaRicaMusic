@@ -8,8 +8,12 @@ html {
   }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #1db954;
 }
 
 html {
@@ -18,5 +22,78 @@ html {
 }
 
 body {
-  margin-bottom: 60px;
+  margin: 0;
+  background: #121212;
+  color: #f5f5f5;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.spotify-shell {
+  min-height: calc(100vh - 56px);
+  display: grid;
+  grid-template-columns: 320px 1fr;
+}
+
+.sidebar {
+  background: #000;
+  padding: 1.5rem;
+}
+
+.subtitle {
+  color: #9ca3af;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 1rem;
+  display: grid;
+  gap: 0.8rem;
+}
+
+.track-btn {
+  width: 100%;
+  border: 1px solid #27272a;
+  border-radius: 12px;
+  padding: 0.8rem;
+  background: #18181b;
+  color: inherit;
+  text-align: left;
+  display: grid;
+  cursor: pointer;
+}
+
+.track-btn:hover {
+  border-color: #1db954;
+}
+
+.track-title {
+  font-weight: 700;
+}
+
+.track-artist {
+  color: #9ca3af;
+  font-size: 0.9rem;
+}
+
+.main-content {
+  padding: 2rem;
+}
+
+.player-card {
+  margin-top: 1.5rem;
+  max-width: 640px;
+  background: linear-gradient(150deg, #1f2937, #111827);
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+
+.now-playing-label {
+  color: #9ca3af;
+  margin: 0;
+}
+
+#musicPlayer {
+  margin-top: 1rem;
+  width: 100%;
 }

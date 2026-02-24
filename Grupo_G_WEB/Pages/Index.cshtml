@@ -1,10 +1,67 @@
-﻿@page
+@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Costa Rica Music";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<section class="spotify-shell">
+    <aside class="sidebar">
+        <h1>Costa Rica Music</h1>
+        <p class="subtitle">Primer MVP tipo Spotify</p>
+
+        <h2>Playlist de ejemplo</h2>
+        <ul>
+            @foreach (var cancion in Model.Canciones)
+            {
+                <li>
+                    <button type="button"
+                            class="track-btn"
+                            data-src="@cancion.UrlPreview"
+                            data-title="@cancion.Titulo"
+                            data-artist="@cancion.Artista">
+                        <span class="track-title">@cancion.Titulo</span>
+                        <span class="track-artist">@cancion.Artista</span>
+                    </button>
+                </li>
+            }
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        <h2>¿Cómo empezar?</h2>
+        <ol>
+            <li>Definir autenticación y perfiles de usuario.</li>
+            <li>Crear un catálogo de canciones/álbumes en base de datos.</li>
+            <li>Construir una API para playlists, búsqueda y reproducción.</li>
+            <li>Integrar un reproductor HTML5 con métricas básicas.</li>
+        </ol>
+
+        <div class="player-card">
+            <p class="now-playing-label">Ahora sonando</p>
+            <h3 id="nowPlayingTitle">Seleccioná una canción</h3>
+            <p id="nowPlayingArtist">—</p>
+
+            <audio id="musicPlayer" controls preload="none">
+                Tu navegador no soporta audio HTML5.
+            </audio>
+        </div>
+    </main>
+</section>
+
+@section Scripts {
+    <script>
+        const botonesCancion = document.querySelectorAll('.track-btn');
+        const player = document.getElementById('musicPlayer');
+        const titulo = document.getElementById('nowPlayingTitle');
+        const artista = document.getElementById('nowPlayingArtist');
+
+        botonesCancion.forEach((btn) => {
+            btn.addEventListener('click', () => {
+                player.src = btn.dataset.src;
+                titulo.textContent = btn.dataset.title;
+                artista.textContent = btn.dataset.artist;
+                player.play();
+            });
+        });
+    </script>
+}
