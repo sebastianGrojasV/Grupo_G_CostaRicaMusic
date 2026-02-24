@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="~/Grupo_G_WEB.styles.css" asp-append-version="true" />
 </head>
 <body>
-    @{ var currentQuery = Context.Request.Query["q"].ToString(); }
     <div class="app-shell">
         <aside class="app-sidebar">
             <a class="brand" asp-page="/Index">Costa Rica Music</a>
@@ -25,7 +24,7 @@
         <div class="app-main-area">
             <header class="app-topbar">
                 <form method="get" asp-page="/Search" class="top-search" role="search">
-                    <input type="search" name="q" value="@currentQuery" placeholder="Buscar canciones, artistas o álbumes" />
+                    <input type="search" name="q" placeholder="Buscar canciones, artistas o álbumes" />
                     <button type="submit">Buscar</button>
                 </form>
             </header>
