@@ -1,0 +1,19 @@
+@page "/artist/{id:int}"
+@model ArtistModel
+@{
+    ViewData["Title"] = "Artista";
+}
+
+<section class="route-card">
+    <h2>Artista</h2>
+
+    @if (Model.Artista is null)
+    {
+        <p>Artista no encontrado.</p>
+    }
+    else
+    {
+        <h3>@Model.Artista.Nombre</h3>
+        <p class="small-note">@Model.Artista.Biografia</p>
+    }
+</section>
