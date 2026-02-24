@@ -184,5 +184,74 @@
         volumeBar.addEventListener('input', () => {
             player.volume = Number(volumeBar.value);
         });
+
+        repeatBtn.addEventListener('click', () => {
+            repeatActivo = !repeatActivo;
+            actualizarBotonesModo();
+            renderUpNext();
+        });
+
+        playPauseBtn.addEventListener('click', () => {
+            if (!player.src && botonesCancion.length > 0) {
+                cargarTrack(0, true);
+                return;
+            }
+
+            if (player.paused) {
+                player.play();
+            } else {
+                player.pause();
+            }
+        });
+
+        nextTrackBtn.addEventListener('click', () => {
+            const nextIndex = obtenerSiguienteIndice();
+            if (nextIndex < 0) return;
+            cargarTrack(nextIndex, true);
+        });
+
+        prevTrackBtn.addEventListener('click', () => {
+            const prevIndex = obtenerAnteriorIndice();
+            if (prevIndex < 0) return;
+            cargarTrack(prevIndex, true);
+        });
+
+        player.addEventListener('play', () => {
+            setButtonState(true);
+            marcarTrackActiva(true);
+        });
+
+        player.addEventListener('pause', () => {
+            setButtonState(false);
+            marcarTrackActiva(false);
+        });
+
+        player.addEventListener('ended', () => {
+            const nextIndex = obtenerSiguienteIndice();
+            if (nextIndex < 0) {
+                setButtonState(false);
+                marcarTrackActiva(false);
+                return;
+            }
+
+            cargarTrack(nextIndex, true);
+        });
+
+        player.addEventListener('timeupdate', () => {
+            if (!player.duration || Number.isNaN(player.duration)) return;
+            seekBar.value = Math.round((player.currentTime / player.duration) * 100);
+        });
+
+        seekBar.addEventListener('input', () => {
+            if (!player.duration || Number.isNaN(player.duration)) return;
+            player.currentTime = (seekBar.value / 100) * player.duration;
+        });
+
+        volumeBar.addEventListener('input', () => {
+            player.volume = Number(volumeBar.value);
+        });
+
+        actualizarBotonesModo();
+        renderUpNext();
     </script>
 }
