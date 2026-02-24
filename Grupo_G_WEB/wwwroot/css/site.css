@@ -171,6 +171,10 @@ body {
   z-index: 20;
 }
 
+body {
+  padding-bottom: 120px;
+}
+
 .player-track-meta h3 {
   margin: 0;
   font-size: 1rem;
@@ -199,11 +203,6 @@ body {
   border-color: #1db954;
 }
 
-.toggle-btn.is-active {
-  border-color: #1db954;
-  background: #12331f;
-}
-
 .player-sliders {
   display: grid;
   gap: 0.35rem;
@@ -221,9 +220,5 @@ body {
 
   .global-player {
     grid-template-columns: 1fr;
-  }
-
-  body {
-    padding-bottom: 210px;
   }
 }
