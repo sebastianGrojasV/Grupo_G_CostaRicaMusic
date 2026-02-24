@@ -1,51 +1,49 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Grupo_G_WEB</title>
+    <title>@ViewData["Title"] - Costa Rica Music</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Grupo_G_WEB.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">Grupo_G_WEB</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+    @{ var currentQuery = Context.Request.Query["q"].ToString(); }
+    <div class="app-shell">
+        <aside class="app-sidebar">
+            <a class="brand" asp-page="/Index">Costa Rica Music</a>
+            <nav class="app-nav" aria-label="Navegación principal">
+                <a asp-page="/Index">Inicio</a>
+                <a asp-page="/Search">Buscar</a>
+                <a asp-page="/Playlist" asp-route-id="1">Playlist</a>
+                <a asp-page="/Artist" asp-route-id="1">Artista</a>
+                <a asp-page="/Album" asp-route-id="1">Álbum</a>
+            </nav>
+        </aside>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - Grupo_G_WEB - <a asp-area="" asp-page="/Privacy">Privacy</a>
+        <div class="app-main-area">
+            <header class="app-topbar">
+                <form method="get" asp-page="/Search" class="top-search" role="search">
+                    <input type="search" name="q" value="@currentQuery" placeholder="Buscar canciones, artistas o álbumes" />
+                    <button type="submit">Buscar</button>
+                </form>
+            </header>
+
+            <main class="app-content" role="main">
+                @RenderBody()
+            </main>
         </div>
-    </footer>
+
+        <aside class="app-right-panel">
+            <h3>Panel</h3>
+            <p>Reservado para "Ahora sonando" y cola extendida.</p>
+        </aside>
+    </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

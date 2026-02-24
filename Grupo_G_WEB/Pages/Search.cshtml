@@ -1,0 +1,111 @@
+@page "/search"
+@model SearchModel
+@{
+    ViewData["Title"] = "Buscar";
+
+    static string FormatDuration(int totalSeconds)
+    {
+        var minutes = totalSeconds / 60;
+        var seconds = totalSeconds % 60;
+        return $"{minutes}:{seconds:00}";
+    }
+
+    static string AlbumCover(string? coverUrl)
+    {
+        return string.IsNullOrWhiteSpace(coverUrl)
+            ? "https://placehold.co/160x160/111827/9ca3af?text=Album"
+            : coverUrl;
+    }
+
+    static string ArtistAvatar(string? imageUrl)
+    {
+        return string.IsNullOrWhiteSpace(imageUrl)
+            ? "https://placehold.co/96x96/1f2937/9ca3af?text=Artista"
+            : imageUrl;
+    }
+}
+
+<section class="search-page">
+    <header class="search-header">
+        <h2>Resultados de búsqueda</h2>
+        <p class="small-note">Consulta: <strong>@(string.IsNullOrWhiteSpace(Model.Q) ? "todo el catálogo" : Model.Q)</strong></p>
+
+        <div class="search-filters">
+            <a asp-page="/Search" asp-route-q="@Model.Q" class="filter-chip @(string.IsNullOrWhiteSpace(Model.Type) ? "is-active" : string.Empty)">Todo</a>
+            <a asp-page="/Search" asp-route-q="@Model.Q" asp-route-type="songs" class="filter-chip @(Model.Type == "songs" ? "is-active" : string.Empty)">Canciones</a>
+            <a asp-page="/Search" asp-route-q="@Model.Q" asp-route-type="artists" class="filter-chip @(Model.Type == "artists" ? "is-active" : string.Empty)">Artistas</a>
+            <a asp-page="/Search" asp-route-q="@Model.Q" asp-route-type="albums" class="filter-chip @(Model.Type == "albums" ? "is-active" : string.Empty)">Álbumes</a>
+        </div>
+    </header>
+
+    @if (Model.TopResultSong is not null)
+    {
+        <article class="route-card top-result-card">
+            <p class="small-note">Top result</p>
+            <h3>@Model.TopResultSong.NombreCancion</h3>
+            <p>@Model.TopResultSong.NombreArtista · @Model.TopResultSong.NombreAlbum</p>
+            <p class="small-note">Duración: @FormatDuration(Model.TopResultSong.DuracionSegundos)</p>
+        </article>
+    }
+
+    @if (Model.Canciones.Any())
+    {
+        <section class="route-card">
+            <h3>Canciones</h3>
+            <ul class="search-song-list">
+                @foreach (var song in Model.Canciones)
+                {
+                    <li class="search-song-item">
+                        <img src="@AlbumCover(song.UrlPortadaAlbum)" alt="Portada de @song.NombreAlbum" />
+                        <div>
+                            <p class="song-name">@song.NombreCancion</p>
+                            <p class="small-note">@song.NombreArtista · @song.NombreAlbum</p>
+                        </div>
+                        <span class="small-note">@FormatDuration(song.DuracionSegundos)</span>
+                    </li>
+                }
+            </ul>
+        </section>
+    }
+
+    @if (Model.Artistas.Any())
+    {
+        <section class="route-card">
+            <h3>Artistas</h3>
+            <div class="search-card-grid">
+                @foreach (var artist in Model.Artistas)
+                {
+                    <a class="discover-card" asp-page="/Artist" asp-route-id="@artist.Id">
+                        <img class="avatar" src="@ArtistAvatar(artist.UrlImagen)" alt="Imagen de @artist.Nombre" />
+                        <h4>@artist.Nombre</h4>
+                        <p class="small-note">Artista</p>
+                    </a>
+                }
+            </div>
+        </section>
+    }
+
+    @if (Model.Albumes.Any())
+    {
+        <section class="route-card">
+            <h3>Álbumes</h3>
+            <div class="search-card-grid">
+                @foreach (var album in Model.Albumes)
+                {
+                    <a class="discover-card" asp-page="/Album" asp-route-id="@album.Id">
+                        <img src="@AlbumCover(album.UrlPortada)" alt="Portada de @album.Nombre" />
+                        <h4>@album.Nombre</h4>
+                        <p class="small-note">@(album.Anio?.ToString() ?? "Año no disponible")</p>
+                    </a>
+                }
+            </div>
+        </section>
+    }
+
+    @if (!Model.Canciones.Any() && !Model.Artistas.Any() && !Model.Albumes.Any())
+    {
+        <section class="route-card">
+            <p>No se encontraron resultados para esta búsqueda.</p>
+        </section>
+    }
+</section>
