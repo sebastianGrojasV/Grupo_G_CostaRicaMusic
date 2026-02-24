@@ -40,28 +40,277 @@
             <p class="now-playing-label">Ahora sonando</p>
             <h3 id="nowPlayingTitle">Seleccioná una canción</h3>
             <p id="nowPlayingArtist">—</p>
+            <p class="small-note">Usá la barra inferior para controlar la reproducción.</p>
+        </div>
 
-            <audio id="musicPlayer" controls preload="none">
-                Tu navegador no soporta audio HTML5.
-            </audio>
+        <div class="up-next-card">
+            <div class="up-next-header">
+                <h3>Up Next</h3>
+                <p class="small-note">Cola dinámica según track actual</p>
+            </div>
+            <ul id="upNextList" class="up-next-list">
+                <li class="up-next-empty">Seleccioná una canción para ver la cola.</li>
+            </ul>
         </div>
     </main>
 </section>
 
+<footer class="global-player" aria-label="Reproductor global">
+    <div class="player-track-meta">
+        <p class="now-playing-label">Reproduciendo</p>
+        <h3 id="globalNowPlayingTitle">Seleccioná una canción</h3>
+        <p id="globalNowPlayingArtist">—</p>
+    </div>
+
+    <div class="player-controls">
+        <button id="shuffleBtn" type="button" class="icon-btn toggle-btn" aria-label="Activar o desactivar shuffle" aria-pressed="false">🔀</button>
+        <button id="prevTrackBtn" type="button" class="icon-btn" aria-label="Canción anterior">⏮</button>
+        <button id="playPauseBtn" type="button" class="icon-btn play-btn" aria-label="Reproducir o pausar">▶</button>
+        <button id="nextTrackBtn" type="button" class="icon-btn" aria-label="Canción siguiente">⏭</button>
+        <button id="repeatBtn" type="button" class="icon-btn toggle-btn" aria-label="Activar o desactivar repeat" aria-pressed="false">🔁</button>
+    </div>
+
+    <div class="player-sliders">
+        <label for="seekBar">Progreso</label>
+        <input id="seekBar" type="range" min="0" max="100" value="0" step="1" />
+        <label for="volumeBar">Volumen</label>
+        <input id="volumeBar" type="range" min="0" max="1" value="1" step="0.05" />
+    </div>
+
+    <audio id="musicPlayer" preload="none">
+        Tu navegador no soporta audio HTML5.
+    </audio>
+</footer>
+
 @section Scripts {
     <script>
-        const botonesCancion = document.querySelectorAll('.track-btn');
+        const botonesCancion = Array.from(document.querySelectorAll('.track-btn'));
         const player = document.getElementById('musicPlayer');
         const titulo = document.getElementById('nowPlayingTitle');
         const artista = document.getElementById('nowPlayingArtist');
+        const tituloGlobal = document.getElementById('globalNowPlayingTitle');
+        const artistaGlobal = document.getElementById('globalNowPlayingArtist');
+        const upNextList = document.getElementById('upNextList');
 
-        botonesCancion.forEach((btn) => {
-            btn.addEventListener('click', () => {
-                player.src = btn.dataset.src;
-                titulo.textContent = btn.dataset.title;
-                artista.textContent = btn.dataset.artist;
-                player.play();
+        const shuffleBtn = document.getElementById('shuffleBtn');
+        const repeatBtn = document.getElementById('repeatBtn');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const nextTrackBtn = document.getElementById('nextTrackBtn');
+        const prevTrackBtn = document.getElementById('prevTrackBtn');
+        const seekBar = document.getElementById('seekBar');
+        const volumeBar = document.getElementById('volumeBar');
+
+        let indiceActual = -1;
+        let shuffleActivo = false;
+        let repeatActivo = false;
+
+        const actualizarBotonesModo = () => {
+            shuffleBtn.classList.toggle('is-active', shuffleActivo);
+            shuffleBtn.setAttribute('aria-pressed', shuffleActivo ? 'true' : 'false');
+
+            repeatBtn.classList.toggle('is-active', repeatActivo);
+            repeatBtn.setAttribute('aria-pressed', repeatActivo ? 'true' : 'false');
+        };
+
+        const setButtonState = (isPlaying) => {
+            playPauseBtn.textContent = isPlaying ? '⏸' : '▶';
+        };
+
+        const marcarTrackActiva = (isPlaying) => {
+            botonesCancion.forEach((btn, idx) => {
+                btn.classList.remove('is-selected', 'is-playing');
+
+                if (idx === indiceActual) {
+                    btn.classList.add('is-selected');
+                    if (isPlaying) {
+                        btn.classList.add('is-playing');
+                    }
+                }
             });
+        };
+
+        const construirOrdenSiguiente = () => {
+            if (botonesCancion.length === 0 || indiceActual < 0) {
+                return [];
+            }
+
+            const restoIndices = botonesCancion
+                .map((_, idx) => idx)
+                .filter((idx) => idx !== indiceActual);
+
+            if (shuffleActivo) {
+                return restoIndices.sort(() => Math.random() - 0.5);
+            }
+
+            const adelante = restoIndices.filter((idx) => idx > indiceActual);
+            const atras = restoIndices.filter((idx) => idx < indiceActual);
+            return repeatActivo ? [...adelante, ...atras] : adelante;
+        };
+
+        const renderUpNext = () => {
+            const orden = construirOrdenSiguiente();
+            upNextList.innerHTML = '';
+
+            if (orden.length === 0) {
+                const li = document.createElement('li');
+                li.className = 'up-next-empty';
+                li.textContent = indiceActual < 0
+                    ? 'Seleccioná una canción para ver la cola.'
+                    : 'No hay más canciones en cola.';
+                upNextList.appendChild(li);
+                return;
+            }
+
+            orden.forEach((idx) => {
+                const btn = botonesCancion[idx];
+                const li = document.createElement('li');
+                const itemBtn = document.createElement('button');
+                itemBtn.type = 'button';
+                itemBtn.className = 'up-next-btn';
+                itemBtn.textContent = `${btn.dataset.title} — ${btn.dataset.artist}`;
+                itemBtn.addEventListener('click', () => cargarTrack(idx, true));
+                li.appendChild(itemBtn);
+                upNextList.appendChild(li);
+            });
+        };
+
+        const obtenerSiguienteIndice = () => {
+            if (botonesCancion.length === 0) {
+                return -1;
+            }
+
+            if (indiceActual < 0) {
+                return 0;
+            }
+
+            if (shuffleActivo && botonesCancion.length > 1) {
+                let randomIndex = indiceActual;
+                while (randomIndex === indiceActual) {
+                    randomIndex = Math.floor(Math.random() * botonesCancion.length);
+                }
+                return randomIndex;
+            }
+
+            const siguiente = indiceActual + 1;
+            if (siguiente < botonesCancion.length) {
+                return siguiente;
+            }
+
+            return repeatActivo ? 0 : -1;
+        };
+
+        const obtenerAnteriorIndice = () => {
+            if (botonesCancion.length === 0) {
+                return -1;
+            }
+
+            if (indiceActual <= 0) {
+                return repeatActivo ? botonesCancion.length - 1 : 0;
+            }
+
+            return indiceActual - 1;
+        };
+
+        const cargarTrack = (index, autoplay = true) => {
+            if (index < 0 || index >= botonesCancion.length) {
+                return;
+            }
+
+            const btn = botonesCancion[index];
+            indiceActual = index;
+            player.src = btn.dataset.src;
+
+            titulo.textContent = btn.dataset.title;
+            artista.textContent = btn.dataset.artist;
+            tituloGlobal.textContent = btn.dataset.title;
+            artistaGlobal.textContent = btn.dataset.artist;
+
+            seekBar.value = 0;
+            marcarTrackActiva(false);
+            renderUpNext();
+
+            if (autoplay) {
+                player.play();
+            }
+        };
+
+        botonesCancion.forEach((btn, idx) => {
+            btn.addEventListener('click', () => cargarTrack(idx));
         });
+
+        shuffleBtn.addEventListener('click', () => {
+            shuffleActivo = !shuffleActivo;
+            actualizarBotonesModo();
+            renderUpNext();
+        });
+
+        repeatBtn.addEventListener('click', () => {
+            repeatActivo = !repeatActivo;
+            actualizarBotonesModo();
+            renderUpNext();
+        });
+
+        playPauseBtn.addEventListener('click', () => {
+            if (!player.src && botonesCancion.length > 0) {
+                cargarTrack(0, true);
+                return;
+            }
+
+            if (player.paused) {
+                player.play();
+            } else {
+                player.pause();
+            }
+        });
+
+        nextTrackBtn.addEventListener('click', () => {
+            const nextIndex = obtenerSiguienteIndice();
+            if (nextIndex < 0) return;
+            cargarTrack(nextIndex, true);
+        });
+
+        prevTrackBtn.addEventListener('click', () => {
+            const prevIndex = obtenerAnteriorIndice();
+            if (prevIndex < 0) return;
+            cargarTrack(prevIndex, true);
+        });
+
+        player.addEventListener('play', () => {
+            setButtonState(true);
+            marcarTrackActiva(true);
+        });
+
+        player.addEventListener('pause', () => {
+            setButtonState(false);
+            marcarTrackActiva(false);
+        });
+
+        player.addEventListener('ended', () => {
+            const nextIndex = obtenerSiguienteIndice();
+            if (nextIndex < 0) {
+                setButtonState(false);
+                marcarTrackActiva(false);
+                return;
+            }
+
+            cargarTrack(nextIndex, true);
+        });
+
+        player.addEventListener('timeupdate', () => {
+            if (!player.duration || Number.isNaN(player.duration)) return;
+            seekBar.value = Math.round((player.currentTime / player.duration) * 100);
+        });
+
+        seekBar.addEventListener('input', () => {
+            if (!player.duration || Number.isNaN(player.duration)) return;
+            player.currentTime = (seekBar.value / 100) * player.duration;
+        });
+
+        volumeBar.addEventListener('input', () => {
+            player.volume = Number(volumeBar.value);
+        });
+
+        actualizarBotonesModo();
+        renderUpNext();
     </script>
 }
