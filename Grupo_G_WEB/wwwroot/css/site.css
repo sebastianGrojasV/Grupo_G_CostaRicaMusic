@@ -263,7 +263,97 @@ body {
 
 .now-playing-label {
   color: #9ca3af;
+}
+
+@media (max-width: 1100px) {
+  .app-shell {
+    grid-template-columns: 220px 1fr;
+  }
+
+  .app-right-panel {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .home-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .global-player {
+    grid-template-columns: 1fr;
+  }
+
+  body {
+    padding-bottom: 220px;
+  }
+}
+
+.search-page {
+  display: grid;
+  gap: 1rem;
+}
+
+.search-header {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.search-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.filter-chip {
+  text-decoration: none;
+  color: #cbd5e1;
+  border: 1px solid #3f3f46;
+  border-radius: 999px;
+  padding: 0.3rem 0.75rem;
+}
+
+.filter-chip.is-active,
+.filter-chip:hover {
+  border-color: #1db954;
+  color: #fff;
+  background: #163122;
+}
+
+.top-result-card h3 {
   margin: 0;
+}
+
+.search-song-list {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.search-song-item {
+  display: grid;
+  grid-template-columns: 52px 1fr auto;
+  align-items: center;
+  gap: 0.75rem;
+  border: 1px solid #2b3446;
+  border-radius: 12px;
+  padding: 0.55rem;
+  background: #121826;
+}
+
+.search-song-item img,
+.discover-card img {
+  width: 52px;
+  height: 52px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.song-name {
+  margin: 0;
+  font-weight: 700;
 }
 
 .player-controls {
