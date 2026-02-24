@@ -1,0 +1,26 @@
+@page "/playlist/{id:int}"
+@model PlaylistModel
+@{
+    ViewData["Title"] = "Playlist";
+}
+
+<section class="route-card">
+    <h2>Playlist</h2>
+
+    @if (Model.Playlist is null)
+    {
+        <p>Playlist no encontrada.</p>
+    }
+    else
+    {
+        <h3>@Model.Playlist.Nombre</h3>
+        <p class="small-note">@Model.Playlist.Descripcion</p>
+
+        <ul>
+            @foreach (var cancion in Model.Playlist.Canciones)
+            {
+                <li>@cancion.NombreCancion — @cancion.NombreArtista</li>
+            }
+        </ul>
+    }
+</section>
